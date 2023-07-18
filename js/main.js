@@ -59,20 +59,59 @@ const posts = [
 ];
 
 const postsList = document.querySelector(".posts-list");
-
-console.log(postsList);
-console.log(posts.length);
+let postContainer;
+const arrayIdLike = [];
 
 createPost(); // creo i post
+
+console.log(arrayIdLike);
+
+//Modifico la data trasformandola in formato IT
+function dateItalian(i) {
+    const dateSplit = posts[i].created.split("-");
+
+    dateSplit.splice(0, 0, `${dateSplit[2]}`);
+    dateSplit.splice(1, 0, `${dateSplit[2]}`);
+    dateSplit.pop();
+    dateSplit.pop();
+
+    const newDate = `${dateSplit[0]}-${dateSplit[1]}-${dateSplit[2]}`;
+
+    return newDate;
+}
+
+// Immagine di default per gli utenti senza immagine
+function defaultImageUser(i) {
+    const profilePic = document.querySelectorAll(".profile-pic");
+    const postMetaIcon = document.querySelectorAll(".post-meta__icon");
+
+    profilePic.forEach((element, z) => {
+        if (posts[z].author.image === null) {
+            // Modifico l'immagine
+            profilePic[z].remove("img");
+            const defaultImage = document.createElement("div");
+            defaultImage.classList.add("profile-pic-default");
+            postMetaIcon[z].append(defaultImage);
+
+            // Aggiungo le iniziali del nome utente
+            const defaultWord = document.createElement("span");
+            const initialLetters = posts[i].author.name.slice(0, 2); // ottengo le prime due lettere del nome
+            defaultWord.textContent = initialLetters;
+            defaultImage.append(defaultWord);
+        }
+    })
+}
 
 // Creo i post
 function createPost() {
 
     posts.forEach((singlePostElement, i) => {
-        const postContainer = document.createElement("div");
+        postContainer = document.createElement("div");
         postContainer.classList.add("post");
 
         postsList.append(postContainer);
+
+        const newDateCreate = dateItalian(i);// Modifico la data trasformandola in formato IT
 
         postContainer.innerHTML +=
             `
@@ -83,7 +122,7 @@ function createPost() {
                         </div>
                         <div class="post-meta__data">
                             <div class="post-meta__author">${posts[i].author.name}</div>
-                            <div class="post-meta__time">${posts[i].created}</div>
+                            <div class="post-meta__time">${newDateCreate}</div>
                         </div>                    
                     </div>
                 </div>
@@ -105,5 +144,51 @@ function createPost() {
                     </div> 
                 </div>            
             `;
+
+        // Aggiungo un elemento dataset ad ogni pulsante
+        const addDatasetLike = document.querySelectorAll(".js-like-button")
+        addDatasetLike.forEach((element, i) => {
+            element.dataset.like = " ";
+        })
+
+        // Immagine di default per gli utenti senza immagine
+        if (posts[i].author.image === null) {
+            defaultImageUser(i);
+        }
+
+        postContainer.querySelector(".js-likes").addEventListener("click", btnLike); // aggiungo al pulsante like un event listener
     })
+}
+
+// Click sul pulsante like
+function btnLike() {
+    const counterLikes = parseInt(this.querySelector(".js-likes-counter").textContent);
+    const idLike = this.querySelector(".js-likes-counter").id;
+
+    if (this.querySelector(".js-like-button").dataset.like === "Like") {
+        this.querySelector(".js-like-button").dataset.like = " ";
+        this.querySelector(".js-like-button").classList.remove("like-button--liked");
+        this.querySelector(".js-likes-counter").textContent = counterLikes - 1;
+        removeArrayIdLike(idLike); // Rimuovo l'id dell'elemento dall'array
+    } else {
+        this.querySelector(".js-like-button").dataset.like = "Like";
+        this.querySelector(".js-like-button").classList.add("like-button--liked");
+        this.querySelector(".js-likes-counter").textContent = counterLikes + 1;
+        addArrayIdLike(idLike); // Aggiungo l'id dell'elemento con like all'array
+    }
+
+    console.log(arrayIdLike);
+}
+
+// Aggiungo l'id dell'elemento con like all'array
+function addArrayIdLike(idLike) {
+    arrayIdLike.push(idLike);
+}
+
+// Rimuovo l'id dell'elemento dall'array
+function removeArrayIdLike(idLike) {
+    let findLike = arrayIdLike.indexOf(idLike);
+    if (findLike > -1) {
+        arrayIdLike.splice(findLike, 1);
+    }
 }
