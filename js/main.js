@@ -57,3 +57,53 @@ const posts = [
         "created": "2021-03-05"
     }
 ];
+
+const postsList = document.querySelector(".posts-list");
+
+console.log(postsList);
+console.log(posts.length);
+
+createPost(); // creo i post
+
+// Creo i post
+function createPost() {
+
+    posts.forEach((singlePostElement, i) => {
+        const postContainer = document.createElement("div");
+        postContainer.classList.add("post");
+
+        postsList.append(postContainer);
+
+        postContainer.innerHTML +=
+            `
+                <div class="post__header">
+                    <div class="post-meta">                    
+                        <div class="post-meta__icon">
+                            <img class="profile-pic" src="${posts[i].author.image}" alt="${posts[i].author.name}">                    
+                        </div>
+                        <div class="post-meta__data">
+                            <div class="post-meta__author">${posts[i].author.name}</div>
+                            <div class="post-meta__time">${posts[i].created}</div>
+                        </div>                    
+                    </div>
+                </div>
+                <div class="post__text">${posts[i].content}</div>
+                <div class="post__image">
+                    <img src="${posts[i].media}" alt="">
+                </div>
+                <div class="post__footer">
+                    <div class="likes js-likes">
+                        <div class="likes__cta">
+                            <a class="like-button  js-like-button" href="#" data-postid="${posts[i].id}">
+                                <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
+                                <span class="like-button__label">Mi Piace</span>
+                            </a>
+                        </div>
+                        <div class="likes__counter">
+                            Piace a <b id="${posts[i].id}" class="js-likes-counter">${posts[i].likes}</b> persone
+                        </div>
+                    </div> 
+                </div>            
+            `;
+    })
+}
